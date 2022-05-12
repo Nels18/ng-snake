@@ -75,7 +75,9 @@ export class GameComponent implements AfterViewInit, OnInit {
       this.drawSnake();
       this.drawApple();
       this.allowChangingOrientation = true;
-      this.moveSnake();
+      if (!this.pause) {
+        this.moveSnake();
+      }
       this.stopGame();
       if (this.gameOver) return;
       this.animation();
@@ -206,5 +208,12 @@ export class GameComponent implements AfterViewInit, OnInit {
     if (!this.gameOver) return;
     this.createGame();
     this.gameOver = false;
+  }
+
+  @HostListener('window:keydown.p', ['$event'])
+  pauseGame() {
+    if (this.gameOver) return;
+    this.pause = !this.pause;
+    console.log('this.pause :', this.pause);
   }
 }

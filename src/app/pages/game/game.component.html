@@ -5,7 +5,11 @@
 </div>
 <div class="messages">
   <ng-container *ngIf="gameOver">
-    <p>Game Over</p>
-    <p>Appuyer sur la touche "Espace" pour recommencer</p>
+    <p>Game Over !</p>
+    <p>Appuyer sur la touche "Espace" pour recommencer.</p>
+  </ng-container>
+  <ng-container *ngIf="!gameOver">
+    <p *ngIf="!pause">Appuyer sur "P" pour mettre le jeux en pause.</p>
+    <p *ngIf="pause">Reprendre.</p>
   </ng-container>
 </div>
