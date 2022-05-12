@@ -59,7 +59,8 @@ export class GameComponent implements AfterViewInit {
       this.createContext();
       this.drawSnake();
       this.drawApple();
-      this.moveSnakeHorizontally();
+      this.moveSnake();
+      if (this.stopGame()) return;
       this.animation();
     }, 100);
   }
@@ -86,9 +87,10 @@ export class GameComponent implements AfterViewInit {
     });
   }
 
-  moveSnakeHorizontally() {
-    const newHead = { x: this.snake[0].x + this.direction.x, y: this.snake[0].y + this.direction.y };
-    const snakeEatPomme = this.snake[0].x === this.apple.x && this.snake[0].y === this.apple.y;
+  moveSnake() {
+    const snakeHead = this.snake[0];
+    const newHead = { x: snakeHead.x + this.direction.x, y: snakeHead.y + this.direction.y };
+    const snakeEatPomme = snakeHead.x === this.apple.x && snakeHead.y === this.apple.y;
 
     this.snake.unshift(newHead);
     if (snakeEatPomme) {
@@ -154,5 +156,30 @@ export class GameComponent implements AfterViewInit {
     );
     this.context.fill();
     this.context.stroke();
+  }
+
+  stopGame() {
+    const snakeHead = this.snake[0];
+    const snakeTail = this.snake.slice(1, -1);
+
+    const hasTouchLeftWall = snakeHead.x < -1;
+    const hasTouchRightWall = snakeHead.x > this.canvasWidth - this.segmentSize;
+    const hasTouchUpWall = snakeHead.y < -1;
+    const hasTouchBottomWall = snakeHead.y > this.canvasHeight - this.segmentSize;
+
+    let hasBittenHimself = false;
+    let gameOver = false;
+
+    snakeTail.forEach((segment) => {
+      if (segment.x === snakeHead.x && segment.y === snakeHead.y) {
+        hasBittenHimself = true;
+      }
+    });
+
+    if (hasBittenHimself || hasTouchLeftWall || hasTouchRightWall || hasTouchUpWall || hasTouchBottomWall) {
+      gameOver = true;
+    }
+
+    return gameOver;
   }
 }
