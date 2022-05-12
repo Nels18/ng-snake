@@ -32,6 +32,7 @@ export class GameComponent implements AfterViewInit {
     x: 0,
     y: 0,
   };
+
   segmentSize = 10;
   canvasWidth = 300;
   canvasHeight = 300;
@@ -40,6 +41,8 @@ export class GameComponent implements AfterViewInit {
     x: 0,
     y: 0,
   };
+
+  score = 0;
 
   ngAfterViewInit(): void {
     this.canvas!.nativeElement.width = this.canvasWidth;
@@ -90,6 +93,7 @@ export class GameComponent implements AfterViewInit {
     this.snake.unshift(newHead);
     if (snakeEatPomme) {
       this.createApple();
+      this.score += 10;
     } else {
       this.snake.pop();
     }
