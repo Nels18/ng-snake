@@ -85,8 +85,14 @@ export class GameComponent implements AfterViewInit {
 
   moveSnakeHorizontally() {
     const newHead = { x: this.snake[0].x + this.direction.x, y: this.snake[0].y + this.direction.y };
+    const snakeEatPomme = this.snake[0].x === this.apple.x && this.snake[0].y === this.apple.y;
+
     this.snake.unshift(newHead);
-    this.snake.pop();
+    if (snakeEatPomme) {
+      this.createApple();
+    } else {
+      this.snake.pop();
+    }
   }
 
   @HostListener('window:keydown', ['$event'])
