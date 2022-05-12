@@ -2,3 +2,9 @@
 <div class="gameCanvas">
   <canvas #gameCanvas [width]="canvasWidth" [height]="canvasHeight"></canvas>
 </div>
+<div class="messages">
+  <ng-container *ngIf="gameOver">
+    <p>Game Over</p>
+    <p>Appuyer sur la touche "Espace" pour recommencer</p>
+  </ng-container>
+</div>

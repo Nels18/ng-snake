@@ -1,32 +1,15 @@
-import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
 
 @Component({
   selector: 'app-game',
   templateUrl: './game.component.html',
   styleUrls: ['./game.component.scss'],
 })
-export class GameComponent implements AfterViewInit {
+export class GameComponent implements AfterViewInit, OnInit {
   @ViewChild('gameCanvas') canvas: ElementRef | undefined;
 
   context: CanvasRenderingContext2D | undefined;
-  snake = [
-    {
-      x: 140,
-      y: 150,
-    },
-    {
-      x: 130,
-      y: 150,
-    },
-    {
-      x: 120,
-      y: 150,
-    },
-    {
-      x: 110,
-      y: 150,
-    },
-  ];
+  snake!: any[];
 
   apple = {
     x: 0,
@@ -42,15 +25,46 @@ export class GameComponent implements AfterViewInit {
     y: 0,
   };
 
-  score = 0;
+  score!: number;
   allowChangingOrientation = true;
+  gameOver = false;
+  speed = 400;
+  pause = false;
 
   ngAfterViewInit(): void {
     this.canvas!.nativeElement.width = this.canvasWidth;
     this.canvas!.nativeElement.height = this.canvasHeight;
     this.createContext();
+  }
+
+  ngOnInit(): void {
     this.direction.y = 0;
     this.direction.x = this.segmentSize;
+    this.createGame();
+  }
+
+  createGame() {
+    this.snake = [
+      {
+        x: this.canvasWidth / 2 - this.segmentSize,
+        y: this.canvasHeight / 2,
+      },
+      {
+        x: this.canvasWidth / 2 - this.segmentSize * 2,
+        y: this.canvasHeight / 2,
+      },
+      {
+        x: this.canvasWidth / 2 - this.segmentSize * 3,
+        y: this.canvasHeight / 2,
+      },
+      {
+        x: this.canvasWidth / 2 - this.segmentSize * 4,
+        y: this.canvasHeight / 2,
+      },
+    ];
+    this.score = 0;
+    this.direction.x = this.segmentSize;
+    this.direction.y = 0;
     this.createApple();
     this.animation();
   }
@@ -62,9 +76,10 @@ export class GameComponent implements AfterViewInit {
       this.drawApple();
       this.allowChangingOrientation = true;
       this.moveSnake();
-      if (this.stopGame()) return;
+      this.stopGame();
+      if (this.gameOver) return;
       this.animation();
-    }, 100);
+    }, this.speed);
   }
 
   createContext() {
@@ -98,6 +113,9 @@ export class GameComponent implements AfterViewInit {
     if (snakeEatPomme) {
       this.createApple();
       this.score += 10;
+      if (this.speed > 0) {
+        this.speed -= 10;
+      }
     } else {
       this.snake.pop();
     }
@@ -143,8 +161,6 @@ export class GameComponent implements AfterViewInit {
         this.createApple();
       }
     });
-
-    console.log('this.apple :', this.apple);
   }
 
   drawApple() {
@@ -173,7 +189,6 @@ export class GameComponent implements AfterViewInit {
     const hasTouchBottomWall = snakeHead.y > this.canvasHeight - this.segmentSize;
 
     let hasBittenHimself = false;
-    let gameOver = false;
 
     snakeTail.forEach((segment) => {
       if (segment.x === snakeHead.x && segment.y === snakeHead.y) {
@@ -182,9 +197,14 @@ export class GameComponent implements AfterViewInit {
     });
 
     if (hasBittenHimself || hasTouchLeftWall || hasTouchRightWall || hasTouchUpWall || hasTouchBottomWall) {
-      gameOver = true;
+      this.gameOver = true;
     }
+  }
 
-    return gameOver;
+  @HostListener('window:keydown.space', ['$event'])
+  restart() {
+    if (!this.gameOver) return;
+    this.createGame();
+    this.gameOver = false;
   }
 }
