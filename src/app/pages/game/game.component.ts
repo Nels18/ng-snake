@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 
 @Component({
   selector: 'app-game',
@@ -7,6 +7,7 @@ import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 })
 export class GameComponent implements AfterViewInit {
   @ViewChild('gameCanvas') canvas: ElementRef | undefined;
+
   context: CanvasRenderingContext2D | undefined;
   snake = [
     {
@@ -27,8 +28,15 @@ export class GameComponent implements AfterViewInit {
     },
   ];
 
+  direction = {
+    x: 0,
+    y: 0,
+  };
+
   ngAfterViewInit(): void {
     this.createContext();
+    this.direction.y = 0;
+    this.direction.x = 10;
     this.animation();
   }
 
@@ -64,8 +72,30 @@ export class GameComponent implements AfterViewInit {
   }
 
   moveSnakeHorizontally() {
-    const newHead = { x: this.snake[0].x + 10, y: this.snake[0].y };
+    const newHead = { x: this.snake[0].x + this.direction.x, y: this.snake[0].y + this.direction.y };
     this.snake.unshift(newHead);
     this.snake.pop();
+  }
+
+  @HostListener('window:keydown', ['$event'])
+  setOrientation(event: KeyboardEvent) {
+    const isMovingToUp = this.direction?.y === -10;
+    const isMovingToDown = this.direction?.y === 10;
+    const isMovingToRight = this.direction?.x === 10;
+    const isMovingToLeft = this.direction?.x === -10;
+
+    if (event.key === 'ArrowLeft' && !isMovingToRight) {
+      this.direction.x = -10;
+      this.direction.y = 0;
+    } else if (event.key === 'ArrowUp' && !isMovingToDown) {
+      this.direction.x = 0;
+      this.direction.y = -10;
+    } else if (event.key === 'ArrowRight' && !isMovingToLeft) {
+      this.direction.x = 10;
+      this.direction.y = 0;
+    } else if (event.key === 'ArrowDown' && !isMovingToUp) {
+      this.direction.x = 0;
+      this.direction.y = 10;
+    }
   }
 }
