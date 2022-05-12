@@ -28,7 +28,7 @@ export class GameComponent implements AfterViewInit, OnInit {
   score!: number;
   allowChangingOrientation = true;
   gameOver = false;
-  speed = 400;
+  speed = 300;
   pause = false;
 
   ngAfterViewInit(): void {
