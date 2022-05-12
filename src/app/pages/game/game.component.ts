@@ -29,7 +29,16 @@ export class GameComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
     this.createContext();
-    this.drawSnake();
+    this.animation();
+  }
+
+  animation() {
+    setTimeout(() => {
+      this.createContext();
+      this.drawSnake();
+      this.moveSnakeHorizontally();
+      this.animation();
+    }, 100);
   }
 
   createContext() {
@@ -52,5 +61,11 @@ export class GameComponent implements AfterViewInit {
     this.snake.forEach((segment) => {
       this.drawSnakeSegment(segment);
     });
+  }
+
+  moveSnakeHorizontally() {
+    const newHead = { x: this.snake[0].x + 10, y: this.snake[0].y };
+    this.snake.unshift(newHead);
+    this.snake.pop();
   }
 }
