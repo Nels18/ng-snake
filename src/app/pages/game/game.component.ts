@@ -43,6 +43,7 @@ export class GameComponent implements AfterViewInit {
   };
 
   score = 0;
+  allowChangingOrientation = true;
 
   ngAfterViewInit(): void {
     this.canvas!.nativeElement.width = this.canvasWidth;
@@ -59,6 +60,7 @@ export class GameComponent implements AfterViewInit {
       this.createContext();
       this.drawSnake();
       this.drawApple();
+      this.allowChangingOrientation = true;
       this.moveSnake();
       if (this.stopGame()) return;
       this.animation();
@@ -103,6 +105,9 @@ export class GameComponent implements AfterViewInit {
 
   @HostListener('window:keydown', ['$event'])
   setOrientation(event: KeyboardEvent) {
+    if (!this.allowChangingOrientation) return;
+    this.allowChangingOrientation = false;
+
     const isMovingToUp = this.direction?.y === -this.segmentSize;
     const isMovingToDown = this.direction?.y === this.segmentSize;
     const isMovingToRight = this.direction?.x === this.segmentSize;
