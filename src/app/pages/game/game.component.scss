@@ -1,0 +1,29 @@
+h1 {
+  font-size: 4rem;
+  padding-left: 1rem;
+  text-align: center;
+}
+.gameCanvas {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  margin: 50px auto;
+}
+
+.score {
+  font-size: 3rem;
+}
+
+.score-container {
+  margin-top: 60px;
+}
+
+.messages {
+  margin: 50px auto;
+}
+
+.score-container,
+.messages {
+  text-align: center;
+}
