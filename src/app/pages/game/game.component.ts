@@ -148,8 +148,11 @@ export class GameComponent implements AfterViewInit, OnInit {
     }
   }
 
-  randomCoordinate(length: number) {
-    return Math.round((Math.random() * length - this.segmentSize) / this.segmentSize) * this.segmentSize;
+  randomCoordinate(length: number): number {
+    let randomNumber;
+    randomNumber = Math.round((Math.random() * length - this.segmentSize) / this.segmentSize) * this.segmentSize;
+    if (randomNumber < 0) randomNumber = 0;
+    return randomNumber;
   }
 
   createApple() {
@@ -214,6 +217,5 @@ export class GameComponent implements AfterViewInit, OnInit {
   pauseGame() {
     if (this.gameOver) return;
     this.pause = !this.pause;
-    console.log('this.pause :', this.pause);
   }
 }
