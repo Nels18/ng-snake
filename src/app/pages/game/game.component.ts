@@ -30,6 +30,7 @@ export class GameComponent implements AfterViewInit, OnInit {
   gameOver = false;
   speed = 300;
   pause = false;
+  eventText = '';
 
   ngAfterViewInit(): void {
     this.canvas!.nativeElement.width = this.canvasWidth;
@@ -123,8 +124,7 @@ export class GameComponent implements AfterViewInit, OnInit {
     }
   }
 
-  @HostListener('window:keydown', ['$event'])
-  setOrientation(event: KeyboardEvent) {
+  setOrientation(newDirection: string) {
     if (!this.allowChangingOrientation) return;
     this.allowChangingOrientation = false;
 
@@ -133,19 +133,53 @@ export class GameComponent implements AfterViewInit, OnInit {
     const isMovingToRight = this.direction?.x === this.segmentSize;
     const isMovingToLeft = this.direction?.x === -this.segmentSize;
 
-    if (event.key === 'ArrowLeft' && !isMovingToRight) {
+    if (newDirection === 'left' && !isMovingToRight) {
       this.direction.x = -this.segmentSize;
       this.direction.y = 0;
-    } else if (event.key === 'ArrowUp' && !isMovingToDown) {
+    } else if (newDirection === 'up' && !isMovingToDown) {
       this.direction.x = 0;
       this.direction.y = -this.segmentSize;
-    } else if (event.key === 'ArrowRight' && !isMovingToLeft) {
+    } else if (newDirection === 'right' && !isMovingToLeft) {
       this.direction.x = this.segmentSize;
       this.direction.y = 0;
-    } else if (event.key === 'ArrowDown' && !isMovingToUp) {
+    } else if (newDirection === 'down' && !isMovingToUp) {
       this.direction.x = 0;
       this.direction.y = this.segmentSize;
     }
+  }
+
+  @HostListener('window:keydown', ['$event'])
+  onKeyboardChangeOrientation(event: KeyboardEvent) {
+    let newDirection = '';
+
+    if (event.key === 'ArrowDown') {
+      newDirection = 'down';
+    } else if (event.key === 'ArrowUp') {
+      newDirection = 'up';
+    } else if (event.key === 'ArrowRight') {
+      newDirection = 'right';
+    } else if (event.key === 'ArrowLeft') {
+      newDirection = 'left';
+    }
+
+    this.setOrientation(newDirection);
+  }
+
+  @HostListener('swipe', ['$event'])
+  onSwipeOrientation(event: any) {
+    let newDirection = '';
+
+    if (event.angle > -45 && event.angle < 45) {
+      newDirection = 'right';
+    } else if (event.angle > 45 && event.angle < 135) {
+      newDirection = 'down';
+    } else if (event.angle > 135 || event.angle < -135) {
+      newDirection = 'left';
+    } else if (event.angle > -135 && event.angle < -45) {
+      newDirection = 'up';
+    }
+
+    this.setOrientation(newDirection);
   }
 
   randomCoordinate(length: number): number {
