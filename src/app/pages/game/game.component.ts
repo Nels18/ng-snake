@@ -1,4 +1,5 @@
 import { AfterViewInit, Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
+import { DeviceDetectorService } from 'ngx-device-detector';
 
 @Component({
   selector: 'app-game',
@@ -31,6 +32,11 @@ export class GameComponent implements AfterViewInit, OnInit {
   speed = 300;
   pause = false;
   eventText = '';
+  isMobile: boolean | undefined;
+
+  constructor(private deviceService: DeviceDetectorService) {
+    this.isMobile = this.deviceService.isMobile();
+  }
 
   ngAfterViewInit(): void {
     this.canvas!.nativeElement.width = this.canvasWidth;
@@ -89,14 +95,14 @@ export class GameComponent implements AfterViewInit, OnInit {
     if (!this.canvas) throw new Error('Canvas element no found');
     this.context = this.canvas.nativeElement.getContext('2d');
     this.context!.fillStyle = '#eee';
-    this.context!.strokeStyle = '#000';
+    this.context!.strokeStyle = '#666';
     this.context!.fillRect(0, 0, this.canvas.nativeElement.width, this.canvas.nativeElement.height);
     this.context!.strokeRect(0, 0, this.canvas.nativeElement.width, this.canvas.nativeElement.height);
   }
 
   drawSnakeSegment(segment: any) {
     this.context!.fillStyle = '#bada55';
-    this.context!.strokeStyle = '#000';
+    this.context!.strokeStyle = '#424814';
     this.context!.fillRect(segment.x, segment.y, this.segmentSize, this.segmentSize);
     this.context!.strokeRect(segment.x, segment.y, this.segmentSize, this.segmentSize);
   }
@@ -241,6 +247,10 @@ export class GameComponent implements AfterViewInit, OnInit {
   }
 
   @HostListener('window:keydown.space', ['$event'])
+  onPressKeyRestart() {
+    this.restart();
+  }
+
   restart() {
     if (!this.gameOver) return;
     this.createGame();
@@ -248,6 +258,10 @@ export class GameComponent implements AfterViewInit, OnInit {
   }
 
   @HostListener('window:keydown.p', ['$event'])
+  onPressKeyPause() {
+    this.pauseGame();
+  }
+
   pauseGame() {
     if (this.gameOver) return;
     this.pause = !this.pause;

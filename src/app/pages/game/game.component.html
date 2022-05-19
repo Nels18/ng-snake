@@ -10,14 +10,22 @@
   <div class="messages">
     <ng-container *ngIf="gameOver">
       <p>Game Over !</p>
-      <p>Appuyer sur la touche "Espace" pour recommencer.</p>
+      <p *ngIf="!isMobile">Appuyer sur la touche "Espace" pour recommencer.</p>
+      <button class="btn" *ngIf="isMobile" (click)="restart()">Recommencer</button>
     </ng-container>
     <ng-container *ngIf="!gameOver">
-      <div *ngIf="!pause">
-        <p>Diriger le serpent avec les touches "🔼", "▶️", "🔽", "◀️".</p>
-        <p>Appuyer sur "P" pour mettre le jeu en pause.</p>
+      <ng-container *ngIf="!isMobile">
+        <div *ngIf="!pause">
+          <p>Diriger le serpent avec les touches "🔼", "▶️", "🔽", "◀️".</p>
+          <p>Appuyer sur "P" pour mettre le jeu en pause.</p>
+        </div>
+        <p *ngIf="pause">Reprendre.</p>
+      </ng-container>
+      <div class="buttons" *ngIf="isMobile">
+        <button class="btn" *ngIf="!pause" (click)="pauseGame()">Pause</button>
+        <button class="btn" *ngIf="pause" (click)="pauseGame()">Reprendre</button>
+        <p>Diriger le serpent en balayant l'écran dans la direction désirée.</p>
       </div>
-      <p *ngIf="pause">Reprendre.</p>
     </ng-container>
   </div>
 </div>
