@@ -1,5 +1,5 @@
 h1 {
-  font-size: 4rem;
+  font-size: 2rem;
   padding-left: 1rem;
   text-align: center;
 }
@@ -8,20 +8,14 @@ h1 {
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  margin: 50px auto;
+  margin: 2em auto;
 }
 
 .score {
-  font-size: 3rem;
-}
-
-.score-container {
-  margin-top: 60px;
+  font-size: 1.2rem;
 }
 
 .messages {
-  margin: 50px auto;
-
   .btn {
     border: none;
     background-color: #eee;
@@ -39,4 +33,18 @@ h1 {
 .score-container,
 .messages {
   text-align: center;
+}
+
+@media screen and (min-width: 640px) {
+  h1 {
+    font-size: 4rem;
+  }
+
+  .score {
+    font-size: 3rem;
+  }
+
+  .score-container {
+    margin-top: 3em;
+  }
 }
