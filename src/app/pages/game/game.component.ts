@@ -18,8 +18,8 @@ export class GameComponent implements AfterViewInit, OnInit {
   };
 
   segmentSize = 10;
-  canvasWidth = 300;
-  canvasHeight = 300;
+  canvasWidth = 240;
+  canvasHeight = 240;
 
   direction = {
     x: 0,
@@ -171,7 +171,6 @@ export class GameComponent implements AfterViewInit, OnInit {
     this.setOrientation(newDirection);
   }
 
-  @HostListener('swipe', ['$event'])
   onSwipeOrientation(event: any) {
     let newDirection = '';
 
