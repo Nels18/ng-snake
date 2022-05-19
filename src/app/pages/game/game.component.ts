@@ -78,15 +78,16 @@ export class GameComponent implements AfterViewInit, OnInit {
 
   animation() {
     setTimeout(() => {
-      this.createContext();
-      this.drawSnake();
-      this.drawApple();
-      this.allowChangingOrientation = true;
       if (!this.pause) {
+        this.createContext();
+        this.drawGrid();
+        this.drawSnake();
+        this.drawApple();
+        this.allowChangingOrientation = true;
         this.moveSnake();
+        this.stopGame();
+        if (this.gameOver) return;
       }
-      this.stopGame();
-      if (this.gameOver) return;
       this.animation();
     }, this.speed);
   }
@@ -95,22 +96,54 @@ export class GameComponent implements AfterViewInit, OnInit {
     if (!this.canvas) throw new Error('Canvas element no found');
     this.context = this.canvas.nativeElement.getContext('2d');
     this.context!.fillStyle = '#eee';
-    this.context!.strokeStyle = '#666';
     this.context!.fillRect(0, 0, this.canvas.nativeElement.width, this.canvas.nativeElement.height);
-    this.context!.strokeRect(0, 0, this.canvas.nativeElement.width, this.canvas.nativeElement.height);
   }
 
-  drawSnakeSegment(segment: any) {
-    this.context!.fillStyle = '#bada55';
-    this.context!.strokeStyle = '#424814';
-    this.context!.fillRect(segment.x, segment.y, this.segmentSize, this.segmentSize);
-    this.context!.strokeRect(segment.x, segment.y, this.segmentSize, this.segmentSize);
+  drawGrid() {
+    if (!this.context) throw new Error('Context no found');
+
+    this.context.lineWidth = 1;
+    this.context.strokeStyle = '#ddd';
+    this.context.shadowBlur = 0;
+    for (let i = 1; i < this.canvasWidth; i++) {
+      const f = this.canvasWidth * (this.segmentSize / this.canvasWidth) * i;
+      this.context.beginPath();
+      this.context.moveTo(f, 0);
+      this.context.lineTo(f, this.canvasHeight);
+      this.context.stroke();
+      this.context.beginPath();
+      this.context.moveTo(0, f);
+      this.context.lineTo(this.canvasWidth, f);
+      this.context.stroke();
+      this.context.closePath();
+    }
+  }
+
+  drawSnakeSegment(index: any) {
+    if (index === 0) {
+      this.context!.fillStyle = '#B3c001';
+    } else {
+      this.context!.fillStyle = '#bada55';
+    }
+    this.context!.strokeStyle = '#674';
+    this.context!.fillRect(
+      this.snake[index].x + 0.5,
+      this.snake[index].y + 0.5,
+      this.segmentSize - 1,
+      this.segmentSize - 1,
+    );
+    this.context!.strokeRect(
+      this.snake[index].x + 0.5,
+      this.snake[index].y + 0.5,
+      this.segmentSize - 1,
+      this.segmentSize - 1,
+    );
   }
 
   drawSnake() {
-    this.snake.forEach((segment) => {
-      this.drawSnakeSegment(segment);
-    });
+    for (let index = 0; index < this.snake.length; index++) {
+      this.drawSnakeSegment(index);
+    }
   }
 
   moveSnake() {
@@ -209,13 +242,13 @@ export class GameComponent implements AfterViewInit, OnInit {
 
   drawApple() {
     if (!this.context) throw new Error('Canvas element no found');
-    this.context.fillStyle = 'red';
-    this.context.strokeStyle = 'darkred';
+    this.context.fillStyle = '#f00';
+    this.context.strokeStyle = '#700';
     this.context.beginPath();
     this.context.arc(
       this.apple.x + this.segmentSize / 2,
       this.apple.y + this.segmentSize / 2,
-      this.segmentSize / 2,
+      this.segmentSize / 2 - 1,
       0,
       2 * Math.PI,
     );
