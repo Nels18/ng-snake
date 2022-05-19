@@ -1,11 +1,12 @@
-<div class="gesture-zone">
+<div>
   <h1>Snake Game</h1>
   <div class="score-container">
-    <p>Score :</p>
-    <span class="score">{{ score }}</span>
+    <p>
+      Score : <span class="score">{{ score }}</span>
+    </p>
   </div>
-  <div class="gameCanvas">
-    <canvas #gameCanvas [width]="canvasWidth" [height]="canvasHeight"></canvas>
+  <div class="game-canvas-container">
+    <canvas #gameCanvas [width]="canvasWidth" [height]="canvasHeight" (swipe)="onSwipeOrientation($event)"></canvas>
   </div>
   <div class="messages">
     <ng-container *ngIf="gameOver">
