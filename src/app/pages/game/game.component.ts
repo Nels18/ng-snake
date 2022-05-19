@@ -1,4 +1,5 @@
 import { AfterViewInit, Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
+import { DeviceDetectorService } from 'ngx-device-detector';
 
 @Component({
   selector: 'app-game',
@@ -30,6 +31,12 @@ export class GameComponent implements AfterViewInit, OnInit {
   gameOver = false;
   speed = 300;
   pause = false;
+  eventText = '';
+  isMobile: boolean | undefined;
+
+  constructor(private deviceService: DeviceDetectorService) {
+    this.isMobile = this.deviceService.isMobile();
+  }
 
   ngAfterViewInit(): void {
     this.canvas!.nativeElement.width = this.canvasWidth;
@@ -88,14 +95,14 @@ export class GameComponent implements AfterViewInit, OnInit {
     if (!this.canvas) throw new Error('Canvas element no found');
     this.context = this.canvas.nativeElement.getContext('2d');
     this.context!.fillStyle = '#eee';
-    this.context!.strokeStyle = '#000';
+    this.context!.strokeStyle = '#666';
     this.context!.fillRect(0, 0, this.canvas.nativeElement.width, this.canvas.nativeElement.height);
     this.context!.strokeRect(0, 0, this.canvas.nativeElement.width, this.canvas.nativeElement.height);
   }
 
   drawSnakeSegment(segment: any) {
     this.context!.fillStyle = '#bada55';
-    this.context!.strokeStyle = '#000';
+    this.context!.strokeStyle = '#424814';
     this.context!.fillRect(segment.x, segment.y, this.segmentSize, this.segmentSize);
     this.context!.strokeRect(segment.x, segment.y, this.segmentSize, this.segmentSize);
   }
@@ -123,8 +130,7 @@ export class GameComponent implements AfterViewInit, OnInit {
     }
   }
 
-  @HostListener('window:keydown', ['$event'])
-  setOrientation(event: KeyboardEvent) {
+  setOrientation(newDirection: string) {
     if (!this.allowChangingOrientation) return;
     this.allowChangingOrientation = false;
 
@@ -133,19 +139,53 @@ export class GameComponent implements AfterViewInit, OnInit {
     const isMovingToRight = this.direction?.x === this.segmentSize;
     const isMovingToLeft = this.direction?.x === -this.segmentSize;
 
-    if (event.key === 'ArrowLeft' && !isMovingToRight) {
+    if (newDirection === 'left' && !isMovingToRight) {
       this.direction.x = -this.segmentSize;
       this.direction.y = 0;
-    } else if (event.key === 'ArrowUp' && !isMovingToDown) {
+    } else if (newDirection === 'up' && !isMovingToDown) {
       this.direction.x = 0;
       this.direction.y = -this.segmentSize;
-    } else if (event.key === 'ArrowRight' && !isMovingToLeft) {
+    } else if (newDirection === 'right' && !isMovingToLeft) {
       this.direction.x = this.segmentSize;
       this.direction.y = 0;
-    } else if (event.key === 'ArrowDown' && !isMovingToUp) {
+    } else if (newDirection === 'down' && !isMovingToUp) {
       this.direction.x = 0;
       this.direction.y = this.segmentSize;
     }
+  }
+
+  @HostListener('window:keydown', ['$event'])
+  onKeyboardChangeOrientation(event: KeyboardEvent) {
+    let newDirection = '';
+
+    if (event.key === 'ArrowDown') {
+      newDirection = 'down';
+    } else if (event.key === 'ArrowUp') {
+      newDirection = 'up';
+    } else if (event.key === 'ArrowRight') {
+      newDirection = 'right';
+    } else if (event.key === 'ArrowLeft') {
+      newDirection = 'left';
+    }
+
+    this.setOrientation(newDirection);
+  }
+
+  @HostListener('swipe', ['$event'])
+  onSwipeOrientation(event: any) {
+    let newDirection = '';
+
+    if (event.angle > -45 && event.angle < 45) {
+      newDirection = 'right';
+    } else if (event.angle > 45 && event.angle < 135) {
+      newDirection = 'down';
+    } else if (event.angle > 135 || event.angle < -135) {
+      newDirection = 'left';
+    } else if (event.angle > -135 && event.angle < -45) {
+      newDirection = 'up';
+    }
+
+    this.setOrientation(newDirection);
   }
 
   randomCoordinate(length: number): number {
@@ -207,6 +247,10 @@ export class GameComponent implements AfterViewInit, OnInit {
   }
 
   @HostListener('window:keydown.space', ['$event'])
+  onPressKeyRestart() {
+    this.restart();
+  }
+
   restart() {
     if (!this.gameOver) return;
     this.createGame();
@@ -214,6 +258,10 @@ export class GameComponent implements AfterViewInit, OnInit {
   }
 
   @HostListener('window:keydown.p', ['$event'])
+  onPressKeyPause() {
+    this.pauseGame();
+  }
+
   pauseGame() {
     if (this.gameOver) return;
     this.pause = !this.pause;
